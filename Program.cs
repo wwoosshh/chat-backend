@@ -15,6 +15,17 @@ int expiryMinutes = int.Parse(jwtSettings["TokenExpiryMinutes"] ?? "5");
 // 컨트롤러 추가
 builder.Services.AddControllers();
 
+// ✅ CORS 설정 추가
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()    // 이후 보안 위해 실제 Origin만 허용하는 걸 추천
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Swagger 설정
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -22,12 +33,11 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "WebApplication1 API",
-        Version = "v1", // ← 이것이 누락되거나 이상할 경우 오류 발생
+        Version = "v1",
         Description = "API 명세",
         TermsOfService = new Uri("https://example.com/terms")
     });
 
-    // 인증 스키마 정의
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -52,7 +62,7 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
-    // ✅ OpenAPI 버전 강제 설정 (이게 핵심!)
+
     options.SupportNonNullableReferenceTypes();
 });
 
@@ -73,20 +83,21 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        ClockSkew = TimeSpan.Zero // 유효시간 정확히
+        ClockSkew = TimeSpan.Zero
     };
 });
 
 var app = builder.Build();
 
-// Swagger 미들웨어 (항상 실행되도록 변경)
+// ✅ CORS 미들웨어 추가 (인증보다 먼저!)
+app.UseCors();
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 API v1");
-    options.RoutePrefix = string.Empty; // 루트에서 Swagger 열기
+    options.RoutePrefix = string.Empty;
 });
-
 
 app.UseHttpsRedirection();
 
