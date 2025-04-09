@@ -1,0 +1,18 @@
+[
+  {
+    "Id": "testuser",
+    "Password": "testpass",
+    "Name": "테스터",
+    "ProfileImage": "",
+    "StatusMessage": "",
+    "JoinedRoomIds": []
+  },
+  {
+    "Id": "testuser1",
+    "Password": "12345",
+    "Name": "테스트유저1",
+    "ProfileImage": "",
+    "StatusMessage": "",
+    "JoinedRoomIds": []
+  }
+]
