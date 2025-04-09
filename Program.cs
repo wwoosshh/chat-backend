@@ -79,16 +79,14 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// Swagger 미들웨어
-if (app.Environment.IsDevelopment())
+// Swagger 미들웨어 (항상 실행되도록 변경)
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 API v1");
-        options.RoutePrefix = string.Empty; // 루트에서 Swagger 열기
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 API v1");
+    options.RoutePrefix = string.Empty; // 루트에서 Swagger 열기
+});
+
 
 app.UseHttpsRedirection();
 
