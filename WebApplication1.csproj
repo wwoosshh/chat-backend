@@ -14,3 +14,8 @@
   </ItemGroup>
 
 </Project>
+<ItemGroup>
+  <Content Include="App_Data\ngrok-url.txt">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
