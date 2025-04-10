@@ -25,7 +25,11 @@ namespace WebApplication1.Controllers
         public UserController(IConfiguration config)
         {
             _config = config;
-            _userFilePath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "users.txt");
+            _userFilePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            "users.txt"
+            );
+
         }
 
         [Authorize]
