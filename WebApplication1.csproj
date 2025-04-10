@@ -13,9 +13,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="App_Data\ngrok-url.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
-<ItemGroup>
-  <Content Include="App_Data\ngrok-url.txt">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
