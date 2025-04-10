@@ -41,17 +41,38 @@ namespace WebApplication1.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserData user)
         {
-            using var client = new HttpClient();
-            var ngrokUrl = "https://34ab-58-233-102-165.ngrok-free.app/api/User/register"; // ngrok 주소 사용
+            try
+            {
+                string ngrokUrlPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ngrok-url.txt");
 
-            var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(ngrokUrl, content);
+                if (!System.IO.File.Exists(ngrokUrlPath))
+                    return StatusCode(500, "ngrok-url.txt 파일을 찾을 수 없습니다.");
 
-            if (response.IsSuccessStatusCode)
-                return Ok("회원가입 성공");
-            else
-                return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+                string baseUrl = System.IO.File.ReadAllText(ngrokUrlPath).Trim();
+
+                if (string.IsNullOrEmpty(baseUrl))
+                    return StatusCode(500, "ngrok-url.txt에 ngrok 주소가 없습니다.");
+
+                using var client = new HttpClient();
+                string fullUrl = $"{baseUrl}/api/User/register";
+
+                var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(fullUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                    return Ok("회원가입 성공");
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    return StatusCode((int)response.StatusCode, error);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"오류 발생: {ex.Message}");
+            }
         }
+
 
 
 
