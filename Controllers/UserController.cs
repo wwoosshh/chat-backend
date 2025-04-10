@@ -38,44 +38,46 @@ namespace WebApplication1.Controllers
         {
             return Ok("이건 인증된 사용자만 볼 수 있는 정보야!");
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserData user)
         {
             try
             {
+                // ngrok-url.txt 위치: 바탕화면
                 string ngrokUrlPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ngrok-url.txt");
 
                 if (!System.IO.File.Exists(ngrokUrlPath))
                     return StatusCode(500, "ngrok-url.txt 파일을 찾을 수 없습니다.");
 
+                // 파일에서 ngrok 주소 읽기
                 string baseUrl = System.IO.File.ReadAllText(ngrokUrlPath).Trim();
 
-                if (string.IsNullOrEmpty(baseUrl))
-                    return StatusCode(500, "ngrok-url.txt에 ngrok 주소가 없습니다.");
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                    return StatusCode(500, "ngrok-url.txt에 유효한 ngrok 주소가 없습니다.");
 
+                // URL 조합 시 이중 슬래시 방지
+                string fullUrl = $"{baseUrl.TrimEnd('/')}/api/User/register";
+
+                // HTTP 요청
                 using var client = new HttpClient();
-                string fullUrl = $"{baseUrl}/api/User/register";
-
                 var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(fullUrl, content);
 
+                // 응답 처리
                 if (response.IsSuccessStatusCode)
                     return Ok("회원가입 성공");
                 else
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    return StatusCode((int)response.StatusCode, error);
+                    return StatusCode((int)response.StatusCode, $"ngrok 서버 응답 오류: {error}");
                 }
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"오류 발생: {ex.Message}");
+                return StatusCode(500, $"서버 내 오류: {ex.Message}");
             }
         }
-
-
-
-
         public class UserData
         {
             public string Id { get; set; } = string.Empty;
