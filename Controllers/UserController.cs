@@ -45,11 +45,7 @@ namespace WebApplication1.Controllers
             try
             {
                 // ngrok-url.txt 위치: 바탕화면
-                #if DEBUG
-                string ngrokUrlPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ngrok-url.txt");
-                #else
-                string ngrokUrlPath = "/etc/ngrok-url.txt"; // 예: 리눅스 서버에 직접 지정된 경로
-                #endif
+                string ngrokUrlPath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data", "ngrok-url.txt");
 
                 Console.WriteLine("NGROK 경로: " + ngrokUrlPath); // 추가
 
