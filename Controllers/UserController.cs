@@ -38,6 +38,21 @@ namespace WebApplication1.Controllers
         {
             return Ok("이건 인증된 사용자만 볼 수 있는 정보야!");
         }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserData user)
+        {
+            using var client = new HttpClient();
+            var ngrokUrl = "https://34ab-58-233-102-165.ngrok-free.app/api/User/register"; // ngrok 주소 사용
+
+            var content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(ngrokUrl, content);
+
+            if (response.IsSuccessStatusCode)
+                return Ok("회원가입 성공");
+            else
+                return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+        }
+
 
 
         public class UserData
@@ -54,26 +69,6 @@ namespace WebApplication1.Controllers
         {
             public string Id { get; set; } = string.Empty;
             public string Password { get; set; } = string.Empty;
-        }
-
-        [HttpPost("register")]
-        public IActionResult Register([FromBody] UserData user)
-        {
-            if (!System.IO.File.Exists(_userFilePath))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(_userFilePath));
-                System.IO.File.WriteAllText(_userFilePath, "[]");
-            }
-
-            var users = JsonConvert.DeserializeObject<List<UserData>>(System.IO.File.ReadAllText(_userFilePath)) ?? new();
-
-            if (users.Any(u => u.Id == user.Id))
-                return BadRequest("이미 존재하는 아이디입니다.");
-
-            users.Add(user);
-            System.IO.File.WriteAllText(_userFilePath, JsonConvert.SerializeObject(users, Formatting.Indented));
-
-            return Ok("회원가입 성공");
         }
 
         [HttpPost("login")]
