@@ -1,5 +1,21 @@
+# Visual Studio 관련 파일 무시
+.vs/
+*.user
+*.suo
+*.cache
+*.dbmdl
+*.log
+*.vsidx
+
+# 빌드 결과물 무시
 bin/
 obj/
-*.log
 
-!App_Data/ngrok-url.txt
+# 기타 환경 파일 무시
+*.config.user
+*.csproj.user
+*.tmp
+
+# Visual Studio Code 관련 무시 (필요 시)
+.vscode/
+
